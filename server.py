@@ -31,10 +31,8 @@ class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         self.data = self.request.recv(1024).strip() # self.data is the encoded request header 
-        # print("Got a request of:\n%s\n" % self.data)
 
         decoded_data = self.data.decode().split("\r\n") # return original string of encoded data which is a byte array object
-        #print(decoded_data,"\n")
         
         # parsing for HTTP method and its path 
         http_method  = decoded_data[0].split(" ")[0] 
@@ -49,20 +47,28 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
         # handling GET requests and path situations 
         elif http_method == "GET":
+            # BUG w/ base.css ends in "/" fix
+            # only happens on chrome, not firefox
+            if ".css" in path and path.endswith("/"):
+                path = path[:-1]
+
             # paths that end in "/" are to return "index.html" 
             if path.endswith('/'):
                 path += "index.html"
-            elif not path.endswith("/"):
-                pass   # 301 here
+            
+            elif "/.." in path:
+                self.request.sendall(b'HTTP/1.1 404 Not Found\r\n')
+                self.request.sendall(b'Connection: close\r\n')
+                return
             
             # try to open file; but if doesnt exist return 404
             try:
                 # context-type (mime-type) needs to support files we serve     
-                context_type = ''
+                content_type = ''
                 if "html" in path:
-                    context_type = "text/html"
+                    content_type = "text/html"
                 elif "css" in path:
-                    context_type = "text/css"
+                    content_type = "text/css"
 
                 # https://stackoverflow.com/a/55895307 - thread on serving files
                 content_file = open("www" + path, "r")
@@ -70,12 +76,19 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 content_file.close()
 
                 self.request.sendall(b'HTTP/1.1 200 OK\r\n')
-                self.request.sendall('Context-Type: {}\r\n'.format(context_type).encode())
+                self.request.sendall('Content-Type: {}\r\n'.format(content_type).encode())
                 self.request.sendall(b'\r\n')
                 self.request.sendall(contents.encode())
+            
+            # redirect on directory error (i.e. base_url + "/deep" test case)
+            # specified this error based off inital exception returning [Errno 21]
+            except IsADirectoryError:
+                self.request.sendall(b'HTTP/1.1 301 Moved Permanently\r\n')
+                self.request.sendall("Location: http://127.0.0.1:8080{}/\r\n".format(path).encode())
 
             except:
                 self.request.sendall(b'HTTP/1.1 404 Not Found\r\n')
+                self.request.sendall(b'Connection: close\r\n')
 
 
 if __name__ == "__main__":

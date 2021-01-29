@@ -27,6 +27,20 @@ compatible) http://docs.python.org/2/library/socketserver.html
 REFERENCES 
 ========================
 
-1. Understanding what mime-types are and how to use them: 
-    * Date Accessed: Jan.28.2021
+1. Understanding what mime-types are and how to use them:
     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
+    * Date Accessed: Jan.28.2021
+
+2. Sending response headers:
+    * https://stackoverflow.com/a/8315292 
+    * Date Accessed: Jan.28.2021
+    * Answer from stackoverflow user: Raymond Hettinger 
+
+3. Thread on serving files:
+    * https://stackoverflow.com/a/55895307
+    * Date Accessed: Jan.28.2021
+    * Answer from stackoverflow user: Mr Morgan 
+
+Collaboration 
+========================
+Discussed how to approach the test case "test_get_group" with Justin Tan.
