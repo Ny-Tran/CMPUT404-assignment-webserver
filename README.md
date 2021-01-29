@@ -24,3 +24,9 @@ examples thus some of the code is Copyright © 2001-2013 Python
 Software Foundation; All Rights Reserved under the PSF license (GPL
 compatible) http://docs.python.org/2/library/socketserver.html
 
+REFERENCES 
+========================
+
+1. Understanding what mime-types are and how to use them: 
+    * Date Accessed: Jan.28.2021
+    * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
